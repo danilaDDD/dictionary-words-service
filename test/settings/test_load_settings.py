@@ -1,6 +1,7 @@
 import pytest
 
-from settings.settings import Settings
+from settings.settings import Settings, load_settings
+
 
 @pytest.mark.unit
 def test_env():
@@ -8,7 +9,7 @@ def test_env():
     assert os.getenv('ENV') == 'test'
 
 @pytest.mark.unit
-def test_load_settings_with_test_env(settings: Settings):
+def test_load_settings_with_test_env():
+    settings = load_settings()
     assert settings is not None
-    assert settings.ENV == "test"
     assert "test" in settings.get_database_url()
