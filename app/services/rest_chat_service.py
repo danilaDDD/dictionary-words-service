@@ -4,7 +4,7 @@ from app.models.models import Chat, Message
 from app.schemas.requests import CreateChatRequest, CreateMessageRequest
 from app.schemas.responses import ChatResponse, MessageResponseEntity, ChatDetailsResponse
 from app.services.base import BaseDBService
-from db.session_manager import SessionManager, get_session_manager
+from app.db import SessionManager, get_session_manager
 
 
 class RestChatService(BaseDBService):
