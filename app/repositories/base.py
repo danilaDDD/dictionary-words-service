@@ -1,7 +1,8 @@
+from bson import ObjectId
 from pymongo.asynchronous.collection import AsyncCollection
 from pymongo.results import UpdateResult
 
-from app.models.base import BaseMongoModel, PyObjectId
+from app.models.base import BaseMongoModel
 from app.utils.datetime_utils import utcnow
 
 
@@ -11,14 +12,14 @@ class BaseRepository:
     def __init__(self, collection: AsyncCollection):
         self.collection = collection
 
-    async def create(self, obj: BaseMongoModel) -> str:
+    async def create(self, obj: BaseMongoModel) -> ObjectId:
         obj.created_at = utcnow()
         obj.updated_at = utcnow()
 
         result = await self.collection.insert_one(obj.model_dump())
         return result.inserted_id
 
-    async def update(self, id: PyObjectId, obj: BaseMongoModel) -> UpdateResult:
+    async def update(self, id: ObjectId, obj: BaseMongoModel) -> UpdateResult:
         obj.updated_at = utcnow()
 
         result = await self.collection.update_one({"_id": id}, {"$set": obj.model_dump()})
@@ -38,7 +39,7 @@ class BaseRepository:
         else:
             await self.collection.delete_many({})
 
-    async def find_by_id(self, id: PyObjectId) -> BaseMongoModel | None:
+    async def find_by_id(self, id: ObjectId) -> BaseMongoModel | None:
         result = await self.collection.find_one({"_id": id})
         if result:
             return self.model.model_validate(result)

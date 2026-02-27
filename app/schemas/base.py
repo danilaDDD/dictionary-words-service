@@ -4,5 +4,6 @@ from pydantic import BaseModel
 
 
 class BaseResponseEntity(BaseModel):
-    id: int
+    id: str
     created_at: datetime
+    updated_at: datetime

@@ -1,9 +1,16 @@
+from typing import List, Optional
+
 from pydantic import BaseModel, Field
 
-
-class CreateChatRequest(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
+from app.models.models import Collection
 
 
-class CreateMessageRequest(BaseModel):
-    text: str = Field(min_length=1)
+class CreateWordRequest(BaseModel):
+    text: str
+    collections: List[Collection]
+    user_id: int
+    translations: List[str]
+
+class UpdateWordRequest(BaseModel):
+    collections: Optional[List[Collection]]
+    translations: Optional[List[str]]

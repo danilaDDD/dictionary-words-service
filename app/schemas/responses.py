@@ -1,19 +1,13 @@
-from typing import List
+from datetime import datetime
 
-from pydantic import BaseModel, Field
-
-from app.schemas.base import BaseResponseEntity
+from pydantic import BaseModel
 
 
-class ChatResponse(BaseResponseEntity):
-    title: str
-
-
-class MessageResponseEntity(BaseResponseEntity):
+class WordResponseEntity(BaseModel):
+    id: str
     text: str
-
-
-class ChatDetailsResponse(BaseResponseEntity):
-    title: str
-    messages: List[MessageResponseEntity]
-
+    collections: list
+    user_id: int
+    translations: list
+    created_at: datetime
+    updated_at: datetime
