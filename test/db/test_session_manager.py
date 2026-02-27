@@ -25,7 +25,7 @@ class TestSessionManager:
 
         async with self.session_manager.start() as session:
             word.text = 'updated'
-            await session.words.update(str(id_obj), word)
+            await session.words.update(id_obj, word)
 
 
 

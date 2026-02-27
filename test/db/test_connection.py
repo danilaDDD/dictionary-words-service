@@ -1,7 +1,5 @@
 import pytest
-from pymongo import AsyncMongoClient
 
-from settings.settings import Settings
 
 @pytest.mark.asyncio
 async def test_connection(client) -> None:

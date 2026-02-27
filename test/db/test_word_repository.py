@@ -1,4 +1,5 @@
 import pytest
+from bson import ObjectId
 from pymongo import AsyncMongoClient
 
 from app.repositories.word_repository import WordRepository
@@ -63,6 +64,16 @@ class TestWordRepository:
 
         not_found_word = await self.repository.find_one(text='not found')
         assert not_found_word is None
+
+        await self.client.close()
+
+    async def test_find_by_id(self):
+        word = gen_word_object('test')
+        id_str = str(await self.repository.create(word))
+
+        found_word = await self.repository.find_by_id(ObjectId(id_str))
+        assert found_word is not None
+        assert found_word.id == str(id_str)
 
         await self.client.close()
 
