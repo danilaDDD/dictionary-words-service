@@ -1,19 +1,21 @@
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Any
+from typing import AsyncGenerator, Any, Callable
 
+from fastapi import Depends
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
 
+from app.db.client_factory import get_db_client_factory, DBClientFactory
 from app.repositories.word_repository import WordRepository
-from settings.settings import Settings
 
 
 class SessionManager:
     client: AsyncMongoClient = None
     db: AsyncDatabase = None
+    db_client_factory: DBClientFactory = None
 
-    def __init__(self, settings: Settings):
-        self.settings = settings
+    def __init__(self, db_client_factory: DBClientFactory):
+        self.db_client_factory = db_client_factory
 
     @property
     def words(self) -> WordRepository:
@@ -22,7 +24,7 @@ class SessionManager:
     @asynccontextmanager
     async def start(self):
         try:
-            self.client = AsyncMongoClient(self.settings.get_database_url())
+            self.client = self.db_client_factory()
             self.db = self.client.get_database()
             yield self
         finally:
@@ -30,5 +32,5 @@ class SessionManager:
             self.client = None
 
 
-def get_session_manager(settings: Settings) -> SessionManager:
-    return SessionManager(settings)
+def get_session_manager(db_client_factory: DBClientFactory = Depends(get_db_client_factory)) -> SessionManager:
+    return SessionManager(db_client_factory)

@@ -5,8 +5,8 @@ from pymongo import AsyncMongoClient
 from app.db.session_manager import SessionManager
 
 @pytest.fixture(scope="module")
-def session_manager(settings) -> SessionManager:
-    return SessionManager(settings)
+def session_manager(db_client_factory) -> SessionManager:
+    return SessionManager(db_client_factory)
 
 @pytest.fixture(scope='function')
 def client(settings):

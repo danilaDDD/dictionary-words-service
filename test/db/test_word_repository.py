@@ -11,14 +11,14 @@ from test.testutils.generation import gen_word_object
 @pytest.mark.db
 class TestWordRepository:
     def reconnect_client(self):
-        self.client = AsyncMongoClient(self.settings.get_database_url())
-        self.db = self.client.get_database()
-        self.collection = self.db.words
+        self.client = self.db_client_factory()
+        db = self.client.get_database()
+        self.collection = db.words
         self.repository = WordRepository(self.collection)
 
     @pytest.fixture(autouse=True, scope='function')
-    def setup(self, settings: Settings):
-        self.settings = settings
+    def setup(self, db_client_factory):
+        self.db_client_factory = db_client_factory
         self.reconnect_client()
 
     async def test_add_word(self):
