@@ -26,7 +26,7 @@ async def create_word(
 ) -> WordResponseEntity:
 
     response.status_code = HTTP_201_CREATED
-    return await rest_word_service.create_chat(request)
+    return await rest_word_service.create_word(request)
 
 @word_router.put("/{id}/",
                  responses={

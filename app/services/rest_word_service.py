@@ -3,6 +3,7 @@ from typing import List
 from fastapi.params import Depends
 
 from app.db.session_manager import SessionManager, get_session_manager
+from app.models.models import Word
 from app.schemas.requests import CreateWordRequest, UpdateWordRequest
 from app.schemas.responses import WordResponseEntity
 
@@ -11,16 +12,31 @@ class RestWordService:
     def __init__(self, session_manager: SessionManager):
         self.session_manager = session_manager
 
-    async def create_chat(self, request: CreateWordRequest) -> WordResponseEntity:
+    async def create_word(self, request: CreateWordRequest) -> WordResponseEntity:
+        async with self.session_manager.start() as session:
+            word = request.get_word()
+            obj_id = await session.words.create(word)
+            word = await session.words.find_by_id(obj_id)
+
+            return WordResponseEntity.of(word)
+
+    async def update_word(self, id: str, request: UpdateWordRequest) -> WordResponseEntity:
+        async with self.session_manager.start() as session:
+            word = await session.words.get_by_id(id)
+            if request.collections is not None:
+                word.collections = request.collections
+            if request.translations is not None:
+                word.translations = request.translations
+
+            await session.words.update(word)
+            saved_word = await session.words.get_by_id(id)
+
+            return WordResponseEntity.of(saved_word)
+
+    async def get_words(self, user_id: int) -> List[WordResponseEntity]:
         pass
 
-    async def update_word(self, request: UpdateWordRequest) -> WordResponseEntity:
-        pass
-
-    async def get_words(self) -> List[WordResponseEntity]:
-        pass
-
-    async def get_word_by_id(self, id: str) -> WordResponseEntity:
+    async def get_word_by_id(self, id: str, user_id: int) -> WordResponseEntity:
         pass
 
     async def delete_word(self, id: str) -> WordResponseEntity:
