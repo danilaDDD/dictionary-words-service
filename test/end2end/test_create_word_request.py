@@ -2,7 +2,7 @@ import pytest
 from starlette.responses import Response
 
 from app.models.models import Collection
-from test.testutils.asserts import assert_error_response
+from test.testutils.asserts import assert_error_response, assert_dict_with_word_object
 from test.testutils.generation import gen_create_word_request_body
 
 
@@ -10,10 +10,11 @@ from test.testutils.generation import gen_create_word_request_body
 @pytest.mark.e2e
 class TestCreateWordRequest:
     @pytest.fixture(scope="function", autouse=True)
-    def setup(self, session_manager, api_client):
+    def setup(self, session_manager, api_client, url_manager):
         self.session_manager = session_manager
         self.api_client = api_client
-        self.url = "/words/"
+        self.url_manager = url_manager
+        self.user_id = 1
         yield
 
     async def test_with_valid_data_should_return_201_and_created_word(self):
@@ -36,14 +37,7 @@ class TestCreateWordRequest:
 
             word = words[0]
             assert word.id is not None
-            assert word.text == word_request['text']
-
-            for collection_dict, collection in zip(word_request['collections'], word.collections):
-                assert Collection.model_validate(collection_dict) == collection
-
-            assert word.translations == word_request['translations']
-            assert word.created_at is not None
-            assert word.updated_at is not None
+            assert_dict_with_word_object(word_request, word)
 
     @pytest.mark.parametrize(
         'invalid_data',
@@ -76,4 +70,5 @@ class TestCreateWordRequest:
             assert len(words) == 1
 
     def do_request(self, word_request: dict) -> Response:
-        return self.api_client.post(self.url, json=word_request)
+        return self.api_client.post(self.url_manager.get_words_url(self.user_id),
+                                    json=word_request)
