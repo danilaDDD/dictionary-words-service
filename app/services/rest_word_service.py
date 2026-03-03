@@ -53,7 +53,9 @@ class RestWordService:
             return WordResponseEntity.of(saved_word)
 
     async def get_words(self, user_id: int) -> List[WordResponseEntity]:
-        pass
+        async with self.session_manager.start() as session:
+            words = await session.words.find_by_user_id(user_id)
+            return [WordResponseEntity.of(word) for word in words]
 
     async def get_word_by_id(self, id: str, user_id: int) -> WordResponseEntity:
         pass

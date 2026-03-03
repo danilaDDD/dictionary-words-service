@@ -50,3 +50,6 @@ class BaseRepository:
         if result:
             return self.model.model_validate(result)
         return None
+
+    async def find_by_user_id(self, user_id: int) -> list[BaseMongoModel]:
+        return await self.find_all(user_id=user_id)

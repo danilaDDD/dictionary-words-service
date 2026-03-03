@@ -4,7 +4,7 @@ from app.schemas.requests import CreateWordRequest
 
 def gen_word_object(text: str, user_id: int = None) -> Word:
     collection = Collection(name=text, id="collection")
-    return Word(text="test",
+    return Word(text=text,
                 user_id=user_id if user_id is not None else 1,
                 collections=[collection], translations=["translation"])
 
