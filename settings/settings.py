@@ -15,11 +15,13 @@ class Settings(BaseSettings):
     DB_NAME: str
     DB_USER: str
     DB_HOST: str
-    DB_PORT: str
+    DB_PORT: int = 27017
     DB_PASSWORD: str
+    AUTH_DB_NAME: str = "admin"
+    AUTH_ALGORITHM: str = "SCRAM-SHA-1"
 
     def get_database_url(self) -> str:
-        return f"{self.DB_PREFIX}://{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return f"{self.DB_PREFIX}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     model_config = SettingsConfigDict(
         env_file_encoding = 'utf-8',

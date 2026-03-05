@@ -12,7 +12,7 @@ def session_manager(db_client_factory) -> SessionManager:
 
 @pytest.fixture(scope='function')
 def client(settings):
-    return AsyncMongoClient(settings.get_database_url())
+    return create_db_client(settings)
 
 @pytest_asyncio.fixture(scope="function", autouse=True)
 async def clean_db_before_test(session_manager):

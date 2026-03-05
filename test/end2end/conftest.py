@@ -9,8 +9,8 @@ from test.testutils.utils import cleanup_db
 
 
 @pytest.fixture(scope="module")
-def session_manager(db_client_factory) -> SessionManager:
-    return SessionManager(db_client_factory)
+def session_manager(db_client_factory, settings) -> SessionManager:
+    return SessionManager(settings, db_client_factory)
 
 @pytest.fixture(scope="module")
 def api_client():
