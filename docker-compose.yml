@@ -1,45 +1,53 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: db
-    env_file:
-      - ./conf/.env.dev
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-#    ports:
-#      - "54321:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
-
   app:
     build:
       context: .
       dockerfile: docker/app.Dockerfile
-    container_name: fastapi_app
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
+    container_name: app
+    restart: always
     env_file:
       - ./conf/.env.dev
-    environment:
-      ENV: dev
-      DB_HOST: db
+    ports:
+      - "8001:8000"
+    depends_on:
+      - app_db
     volumes:
-      - .:/app
       - ./logs:/app/logs
-    networks:
-      - app-network
+
+  app_db:
+    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    container_name: app_db
+    restart: always
+    env_file:
+      - ./conf/.env.db
+    ports:
+      - "27018:27017"
+    volumes:
+      - db_data:/data/db
+      - db_config:/data/configdb
+      - ./mongo-init:/docker-entrypoint-initdb.d
+
+#  test_db:
+#    image: mongo:5.0
+#    container_name: test_db
+#    restart: always
+#    env_file:
+#      ./conf/.env.test
+#    environment:
+#      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+#      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+#      - MONGO_INITDB_DATABASE=${DB_NAME}
+#    ports:
+#      - "27019:27017"
+#    volumes:
+#      - test_db_data:/data/db
 
 volumes:
-  postgres_data:
+  db_data:
+    driver: local
+  db_config:
+    driver: local
 
-networks:
-  app-network:
-    driver: bridge
+
