@@ -27,27 +27,40 @@ services:
     volumes:
       - db_data:/data/db
       - db_config:/data/configdb
-      - ./mongo-init:/docker-entrypoint-initdb.d
 
-#  test_db:
-#    image: mongo:5.0
-#    container_name: test_db
-#    restart: always
-#    env_file:
-#      ./conf/.env.test
-#    environment:
-#      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
-#      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
-#      - MONGO_INITDB_DATABASE=${DB_NAME}
-#    ports:
-#      - "27019:27017"
-#    volumes:
-#      - test_db_data:/data/db
+  test_app:
+    build:
+      context: .
+      dockerfile: docker/test.Dockerfile
+    container_name: test_app
+    restart: always
+    env_file:
+      - ./conf/.env.test
+    depends_on:
+      - test_db
+
+
+  test_db:
+    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    container_name: test_db
+    restart: always
+    env_file:
+      - ./conf/.env.testdb
+    ports:
+      - "27019:27017"
+    volumes:
+      - test_db_data:/data/db
+      - test_db_config:/data/configdb
+      - ./reports:/app/reports
 
 volumes:
   db_data:
     driver: local
   db_config:
+    driver: local
+  test_db_data:
+    driver: local
+  test_db_config:
     driver: local
 
 

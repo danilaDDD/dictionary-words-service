@@ -20,6 +20,6 @@ WORKDIR /app
 
 COPY . .
 
-EXPOSE 8000
+RUN mkdir -p /app/reports && chmod -R 766 /app/reports
 
-CMD ["sh", "-c", "python -m app.setup && uvicorn main:app --host 0.0.0.0 --port 8000"]
+CMD ["pytest", "test/", "--cov=app", "--cov=settings", "--cov-report=xml:./reports/coverage.xml", "--cov-report=html:./reports"]
