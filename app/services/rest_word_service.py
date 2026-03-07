@@ -1,5 +1,6 @@
 from typing import List
 
+import bson
 import pymongo
 from bson import ObjectId
 from fastapi import HTTPException
@@ -57,11 +58,41 @@ class RestWordService:
             words = await session.words.find_by_user_id(user_id)
             return [WordResponseEntity.of(word) for word in words]
 
-    async def get_word_by_id(self, id: str, user_id: int) -> WordResponseEntity:
-        pass
+    async def get_word_by_id(self, user_id: int, word_id: str) -> WordResponseEntity:
+        async with self.session_manager.start() as session:
+            try:
+                id_obj = ObjectId(word_id)
+            except bson.errors.InvalidId:
+                self._raise_not_found_exception()
 
-    async def delete_word(self, id: str) -> WordResponseEntity:
-        pass
+            word = await session.words.find_by_id(id_obj)
+
+            if word is None:
+                self._raise_not_found_exception()
+
+            if word.user_id != user_id:
+                self._raise_unauthorized_exception()
+
+            return WordResponseEntity.of(word)
+
+    async def delete_word(self, user_id: int, word_id: str) -> WordResponseEntity:
+        async with self.session_manager.start() as session:
+            try:
+                id_obj = ObjectId(word_id)
+            except bson.errors.InvalidId:
+                self._raise_not_found_exception()
+
+            word = await session.words.find_by_id(id_obj)
+
+            if word is None:
+                self._raise_not_found_exception()
+
+            if word.user_id != user_id:
+                self._raise_unauthorized_exception()
+
+            await session.words.delete_by_id(id_obj)
+
+            return WordResponseEntity.of(word)
 
     def _raise_unauthorized_exception(self):
         raise HTTPException(status_code=403, detail="Unauthorized to access this resource.")

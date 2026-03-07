@@ -39,6 +39,9 @@ class BaseRepository:
         else:
             await self.collection.delete_many({})
 
+    async def delete_by_id(self, id: ObjectId) -> None:
+        await self.collection.delete_one({"_id": id})
+
     async def find_by_id(self, id: ObjectId) -> BaseMongoModel | None:
         result = await self.collection.find_one({"_id": id})
         if result:

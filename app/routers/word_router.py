@@ -77,6 +77,8 @@ async def get_word_by_id(user_id: int, word_id: str,
                             "description": "Word deleted successfully"
                         },
                     })
-async def delete_word(user_id: int, word_id: str, rest_word_service: RestWordService = Depends(get_rest_word_service)) -> WordResponseEntity:
+async def delete_word(user_id: int, word_id: str,
+                      response: Response,
+                      rest_word_service: RestWordService = Depends(get_rest_word_service)) -> WordResponseEntity:
     return await rest_word_service.delete_word(user_id, word_id)
 
