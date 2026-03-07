@@ -1,5 +1,6 @@
 from pymongo import AsyncMongoClient
 
+from app.db.client_factory import get_db
 from app.db.session_manager import SessionManager
 from app.models.models import Word
 
@@ -13,5 +14,5 @@ class UrlManager:
 
 async def cleanup_db(session_manager: SessionManager):
     async with session_manager.start() as session:
-        db = session.client.get_database()
+        db = session.get_db()
         await db.words.delete_many({})

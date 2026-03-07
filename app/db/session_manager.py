@@ -23,6 +23,9 @@ class SessionManager:
     def words(self) -> WordRepository:
         return WordRepository(self.db.words)
 
+    def get_db(self) -> AsyncDatabase:
+        return get_db(self.settings, self.client)
+
     @asynccontextmanager
     async def start(self):
         try:

@@ -7,4 +7,5 @@
 /logs/*.log
 /env/
 /venv/
-./test/reports/.*
+./reports/.*
+.coverage

@@ -1,14 +1,15 @@
 import pytest
 import pytest_asyncio
-from pymongo import AsyncMongoClient
 
+from app.db.client_factory import create_db_client
 from app.db.session_manager import SessionManager
+from settings.settings import Settings
 from test.testutils.utils import cleanup_db
 
 
 @pytest.fixture(scope="module")
-def session_manager(db_client_factory) -> SessionManager:
-    return SessionManager(db_client_factory)
+def session_manager(settings: Settings, db_client_factory) -> SessionManager:
+    return SessionManager(settings, db_client_factory)
 
 @pytest.fixture(scope='function')
 def client(settings):

@@ -2,6 +2,7 @@ import pytest
 from bson import ObjectId
 from pymongo import AsyncMongoClient
 
+from app.db.client_factory import get_db
 from app.repositories.word_repository import WordRepository
 from settings.settings import Settings
 from test.testutils.generation import gen_word_object
@@ -10,16 +11,14 @@ from test.testutils.generation import gen_word_object
 @pytest.mark.asyncio
 @pytest.mark.db
 class TestWordRepository:
-    def reconnect_client(self):
-        self.client = self.db_client_factory()
-        db = self.client.get_database()
-        self.collection = db.words
-        self.repository = WordRepository(self.collection)
 
     @pytest.fixture(autouse=True, scope='function')
-    def setup(self, db_client_factory):
+    def setup(self, settings, db_client_factory):
         self.db_client_factory = db_client_factory
-        self.reconnect_client()
+        self.client = self.db_client_factory()
+        db = get_db(settings, self.client)
+        self.collection = db.words
+        self.repository = WordRepository(self.collection)
 
     async def test_add_word(self):
         word = gen_word_object('test')
