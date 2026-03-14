@@ -9,8 +9,8 @@ from test.testutils.generation import gen_word_object
 @pytest.mark.e2e
 class TestGetWordDetailsRequest:
     @pytest.fixture(scope="function", autouse=True)
-    def setup(self, session_manager, api_client, url_manager):
-        self.session_manager = session_manager
+    def setup(self, session, api_client, url_manager):
+        self.session = session
         self.api_client = api_client
         self.url_manager = url_manager
         self.user_id = 1
@@ -45,11 +45,10 @@ class TestGetWordDetailsRequest:
         assert_error_response(resp, 404)
 
 
-    async def create_word(self) -> Word:
+    async def create_word(self) -> Word | None:
         word = gen_word_object("text", user_id=self.user_id)
-        async with self.session_manager.start() as session:
-            id_obj = await session.words.create(word)
-            return await session.words.find_by_id(id_obj)
+        id_obj = await self.session.words.create(word)
+        return await self.session.words.find_by_id(id_obj)
 
     def do_request(self, word_id: str, user_id: int = None):
         url = self.url_manager.get_word_by_id_url(user_id or self.user_id, word_id)

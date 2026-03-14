@@ -1,14 +1,12 @@
 import pytest
 
-from app.db.client_factory import get_db
+from app.db.db import get_db
 
 
 @pytest.mark.asyncio
-async def test_connection(client, settings) -> None:
-    db = get_db(settings, client)
+async def test_connection(session) -> None:
+    db = session.get_db()
     assert db is not None
 
     words = db.words
     assert words is not None
-
-    await client.close()

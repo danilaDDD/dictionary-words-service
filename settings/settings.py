@@ -35,3 +35,6 @@ def load_settings() -> Settings:
     env_vars = dotenv_values(env_path)
 
     return Settings(_env_file=env_path, **env_vars)
+
+def get_settings() -> Settings:
+    return load_settings()

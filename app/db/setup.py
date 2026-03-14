@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 
-from app.db.client_factory import create_sync_db_client
+from app.db.db import create_sync_db_client
 
 
 def setup_db(settings):
