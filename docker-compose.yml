@@ -33,9 +33,11 @@ services:
       context: .
       dockerfile: docker/test.Dockerfile
     container_name: test_app
-    restart: always
+    restart: "no"
     env_file:
       - ./conf/.env.test
+    environment:
+      - ENV=test
     depends_on:
       - test_db
 
@@ -62,5 +64,4 @@ volumes:
     driver: local
   test_db_config:
     driver: local
-
 

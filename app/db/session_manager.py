@@ -1,22 +1,18 @@
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Any, Callable
+from typing import Generator
 
-from fastapi import Depends
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
+from starlette.requests import Request
 
-from app.db.client_factory import get_db_client_factory, DBClientFactory, get_db
+from app.db.db import DBClientFactory, get_db, get_db_client, create_db_client
 from app.repositories.word_repository import WordRepository
-from settings.settings import load_settings, Settings
-
+from settings.settings import Settings
 
 class SessionManager:
-    client: AsyncMongoClient = None
     db: AsyncDatabase = None
     db_client_factory: DBClientFactory = None
 
-    def __init__(self, settings: Settings, db_client_factory: DBClientFactory):
-        self.db_client_factory = db_client_factory
+    def __init__(self, settings: Settings):
         self.settings = settings
 
     @property
@@ -26,17 +22,13 @@ class SessionManager:
     def get_db(self) -> AsyncDatabase:
         return get_db(self.settings, self.client)
 
-    @asynccontextmanager
-    async def start(self):
-        try:
-            self.client = self.db_client_factory()
-            self.db = get_db(self.settings, self.client)
-            yield self
-        finally:
-            await self.client.close()
-            self.client = None
+    def start(self) -> "SessionManager":
+        self.client = create_db_client(self.settings)
+        self.db = get_db(self.settings, self.client)
+        return self
 
+    async def close(self):
+        await self.client.close()
 
-def get_session_manager(db_client_factory: DBClientFactory = Depends(get_db_client_factory),
-                        settings: Settings = Depends(load_settings)) -> SessionManager:
-    return SessionManager(settings, db_client_factory)
+def get_session_manager(request: Request) -> SessionManager:
+    return request.app.state.session

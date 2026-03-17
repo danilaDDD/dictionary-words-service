@@ -8,8 +8,8 @@ from test.testutils.generation import gen_word_object
 @pytest.mark.asyncio
 class TestDeleteWordRequest:
     @pytest.fixture(scope="function", autouse=True)
-    def setup(self, session_manager, api_client, url_manager):
-        self.session_manager = session_manager
+    def setup(self, session, api_client, url_manager):
+        self.session = session
         self.api_client = api_client
         self.url_manager = url_manager
         self.user_id = 1
@@ -17,16 +17,14 @@ class TestDeleteWordRequest:
 
     async def test_with_valid_word_id_should_return_200_and_delete_word(self):
         word = gen_word_object(text='text', user_id=self.user_id)
+        word_id = await self.session.words.create(word)
 
-        async with self.session_manager.start() as session:
-            word_id = await session.words.create(word)
+        resp = self.do_request(str(word_id))
+        assert resp.status_code == 200
+        assert resp.json() != {}
 
-            resp = self.do_request(word_id)
-            assert resp.status_code == 200
-            assert resp.json() != {}
-
-            words = await session.words.find_all()
-            assert len(words) == 0
+        words = await self.session.words.find_all()
+        assert len(words) == 0
 
     async def test_with_non_existent_word_id_should_return_404(self):
         non_existent_word_id = "uyfeyufey"
@@ -43,11 +41,10 @@ class TestDeleteWordRequest:
     async def test_with_invalid_user_id_should_return_403(self):
         word = gen_word_object(text='text', user_id=self.user_id)
 
-        async with self.session_manager.start() as session:
-            word_id = await session.words.create(word)
+        word_id = await self.session.words.create(word)
 
-            resp = self.do_request(word_id, user_id=999)
-            assert_error_response(resp, 403)
+        resp = self.do_request(word_id, user_id=999)
+        assert_error_response(resp, 403)
 
     def do_request(self, word_id: str, user_id: int = None):
         url = self.url_manager.get_word_by_id_url(user_id or self.user_id, word_id)

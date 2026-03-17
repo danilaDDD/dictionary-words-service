@@ -22,4 +22,4 @@ COPY . .
 
 RUN mkdir -p /app/reports && chmod -R 766 /app/reports
 
-CMD ["pytest", "test/", "--cov=app", "--cov=settings", "--cov-report=xml:./reports/coverage.xml", "--cov-report=html:./reports"]
+CMD ["sh", "-c", "sh/run_test.sh"]
