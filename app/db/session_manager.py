@@ -6,7 +6,7 @@ from starlette.requests import Request
 
 from app.db.db import DBClientFactory, get_db, get_db_client, create_db_client
 from app.repositories.word_repository import WordRepository
-from settings.settings import Settings, get_settings
+from settings.settings import Settings
 
 class SessionManager:
     db: AsyncDatabase = None

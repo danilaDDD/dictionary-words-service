@@ -1,10 +1,9 @@
 from typing import Callable, Any
 
-from fastapi.params import Depends
 from pymongo import AsyncMongoClient, MongoClient
 from starlette.requests import Request
 
-from settings.settings import Settings, load_settings, get_settings
+from settings.settings import Settings
 
 DBClientFactory = Callable[[], AsyncMongoClient]
 

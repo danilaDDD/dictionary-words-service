@@ -5,6 +5,7 @@ from typing import Optional
 from dotenv import dotenv_values
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from starlette.requests import Request
 
 from settings.path import get_env_file_path
 
@@ -25,7 +26,6 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(
         env_file_encoding = 'utf-8',
-        env_file=get_env_file_path(env=os.getenv('ENV', 'dev')),
     )
 
 
@@ -36,5 +36,5 @@ def load_settings() -> Settings:
 
     return Settings(_env_file=env_path, **env_vars)
 
-def get_settings() -> Settings:
-    return load_settings()
+def get_settings(request: Request) -> Settings:
+    return request.app.state.settings
