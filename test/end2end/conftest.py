@@ -1,4 +1,3 @@
-# Оберну создание TestClient в контекстный менеджер, чтобы lifespan FastAPI правильно стартовал и завершался
 import pytest
 import pytest_asyncio
 from starlette.testclient import TestClient
