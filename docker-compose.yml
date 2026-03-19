@@ -17,7 +17,7 @@ services:
       - ./logs:/app/logs
 
   app_db:
-    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    image: mongo:5.0
     container_name: dictionary-words-db
     restart: always
     env_file:
@@ -43,7 +43,7 @@ services:
 
 
   test_db:
-    image: mongodb/mongodb-community-server:8.0-ubuntu2204
+    image: mongo:5.0
     container_name: dictionary-words-test-db
     restart: always
     env_file:
