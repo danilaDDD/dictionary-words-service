@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: docker/app.Dockerfile
-    container_name: app
+    container_name: dictionary-words-app
     restart: always
     env_file:
       - ./conf/.env.dev
@@ -18,7 +18,7 @@ services:
 
   app_db:
     image: mongodb/mongodb-community-server:8.0-ubuntu2204
-    container_name: app_db
+    container_name: dictionary-words-db
     restart: always
     env_file:
       - ./conf/.env.db
@@ -32,7 +32,7 @@ services:
     build:
       context: .
       dockerfile: docker/test.Dockerfile
-    container_name: test_app
+    container_name: test-dictionary-words-app
     restart: "no"
     env_file:
       - ./conf/.env.test
@@ -44,7 +44,7 @@ services:
 
   test_db:
     image: mongodb/mongodb-community-server:8.0-ubuntu2204
-    container_name: test_db
+    container_name: dictionary-words-test-db
     restart: always
     env_file:
       - ./conf/.env.testdb
